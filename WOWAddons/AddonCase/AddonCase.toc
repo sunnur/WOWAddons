@@ -1,0 +1,50 @@
+# '#'所在的行表示注释，‘##’所在行为官方标签，无标志的行表示该插件需要加载的文件，注：WOW对于插件中的文件，一行最多可识别1024字符
+# 仅当客户端最初启动时，才会读取所有加载项的.toc文件。正在运行的客户端将忽略对.toc文件所做的任何更改，直到重新启动整个客户端为止。重新启动UI或登录或注销将不会使WOW使用该文件的新版本。换句话说，在重新加载UI时，将执行在启动哇时读取的addons .toc文件的原始版本。
+
+# 'Interface' 标签，表示当前游戏版本的接口号，可以通过多种方式获得，如在游戏中调用API GetBuildInfo。
+# 最权威来源：在“ World of Warcraft / _retail_”或“ World of Warcraft / _classic_”文件夹中找到“ WTF / Config.wtf”文件，然后在“ CVar”中找到 “ lastAddonVersion”
+# 上述方法在安装或打补丁后必须至少运行一次WoW才能显示出来。
+## Interface: 80205
+
+# 'Title' 标签，该标签的值显示在“加载项”列表中。可以通过在客户端的语言环境名称后附加连字符来包括本地化版本。该值还可以包含UI转义序列，例如颜色。
+## Title: Waiting for Bob
+
+# 'Notes' 标签，将鼠标移动到标签上时显示的提示信息
+## Notes: Nothing to be done.
+
+# 'RequiredDeps', 'Dependencies',或任何以"Dep"开头的标签，依赖项，以逗号分隔，必须先加载这些依赖项，然后才能加载此插件。
+## Dependencies: someAddOn, someOtherAddOn
+
+# 'OptionalDeps' 可选依赖项，以逗号分隔，若这些插件可被加载，则会在此插件加载前加载
+## OptionalDeps: someAddOn, someOtherAddOn
+
+# 'LoadOnDemand' 按需加载时能，当此值为1时，则在用户首次登录时不会加载该插件，但是以后可以由另一个插件加载。
+## LoadOnDemand: 1
+
+# 'LoadWith' 当列表中的插件被加载时，此插件随之加载。
+## LoadWith: someAddOn, someOtherAddOn
+
+# 'LoadManagers' 支持的插件加载器，若列表中的某个插件加载，则客户端将会视其他所以插件为按需加载，否则由客户端进行加载
+## LoadManagers: someAddOn
+
+# 'SavedVariables' 以','分割的全局变量列表，当客户端退出时将保存到磁盘中，并在加载插件时释放至全局环境中；在您的插件触发ADDON_LOADED事件之前，变量不可用。
+## SavedVariables: foo, bar
+
+# 'SavedVariablesPerCharacter' 以','分割的全局变量列表，当客户端退出时将保存到磁盘中，并在加载插件时释放至全局环境中，不同角色值分别存储；在您的插件触发ADDON_LOADED事件之前，变量不可用。
+## SavedVariablesPerCharacter: somePercharVariable
+
+# 'DefaultState' 插件安装后的默认状态，enabled表示默认启用，disabled表示默认不启用
+## DefaultState: enabled
+
+# 'Secure' 如果此标记的值为1，并且插件由暴雪进行数字签名，则其代码被认为是安全的（与受污染相反，这是所有第三方插件的默认属性）。
+## Secure: 0
+
+# 'Author' 插件作者
+## Author: ButFly
+
+# 'Version' 插件版本
+## Version: 1.0
+
+#需加载文件
+AddonCase.xml
+AddonCase.lua
