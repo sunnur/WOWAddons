@@ -1,8 +1,15 @@
+local addonName, addon = ...
+
+function addon:print(...)
+    _G.print("|cFF00FFFF[RubbishTerminator]:|r", ...)
+end
 
 function Drop()
     SlashCmdList["DeleteItem"] = DeleteItemAction
+    SlashCmdList["DeleteItemTest"] = TestPrint
     SLASH_DeleteItem1 = "/delete"
-    print("MyDelete load finish")
+    SLASH_DeleteItemTest1 = "/del_test"
+    addon:print("MyDelete load finish")
 end
 
 function GetItemName(item)
@@ -23,6 +30,10 @@ function DeleteItemAction(item)
             end
         end
     end
+end
+
+TestPrint = function ()
+    addon:print("TestPrint")
 end
 
 local frame = CreateFrame("Frame", nil, UIParent);

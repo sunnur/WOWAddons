@@ -1,4 +1,4 @@
-# '#'所在的行表示注释，‘##’所在行为官方标签，无标志的行表示该插件需要加载的文件，注：WOW对于插件中的文件，一行最多可识别1024字符
+# 井号 所在的行表示注释，双井号 所在行为官方标签，无标志的行表示该插件需要加载的文件，注：WOW对于插件中的文件，一行最多可识别1024字符
 # 仅当客户端最初启动时，才会读取所有加载项的.toc文件。正在运行的客户端将忽略对.toc文件所做的任何更改，直到重新启动整个客户端为止。重新启动UI或登录或注销将不会使WOW使用该文件的新版本。换句话说，在重新加载UI时，将执行在启动哇时读取的addons .toc文件的原始版本。
 
 # 'Interface' 标签，表示当前游戏版本的接口号，可以通过多种方式获得，如在游戏中调用API GetBuildInfo。
@@ -41,7 +41,7 @@
 ## LoadOnDemand: 0
 # ## LoadWith: someAddOn, someOtherAddOn
 # ## LoadManagers: someAddOn
-## SavedVariables: RTR_RubbishKey
+## SavedVariables: RTR_RubbishKey,RTR_DB
 ## SavedVariablesPerCharacter: RTR_CharacterCfg
 ## DefaultState: enabled
 ## Secure: 0
@@ -51,3 +51,6 @@
 #需加载文件
 RubbishTerminator.xml
 RubbishTerminator.lua
+MiniMapIcon.xml
+MiniMapIcon.lua
+IconConfig.xml
