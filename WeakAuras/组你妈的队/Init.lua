@@ -23,10 +23,7 @@ aura_env.checkTarget = function(name)
         for i =1, num do
             local info =  C_BattleNet.GetFriendAccountInfo(i).gameAccountInfo
             if info.clientProgram == BNET_CLIENT_WOW then
-                local gName = info.characterName.."-"..(info.realmName or "")
-                if string.find(gName, GetRealmName()) then
-                    gName =strsplit("-", gName)
-                end
+                local gName = info.characterName
                 if name == gName then
                     return true
                 end

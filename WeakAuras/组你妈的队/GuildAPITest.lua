@@ -26,17 +26,16 @@ GUILD_TRADESKILL_UPDATE
 function(event,...)
     local playerName,playerRank,playerClass
     if event == "GUILD_TRADESKILL_UPDATE" then
-        local _,_,count = GetNumGuildMembers()
-        aura_env.mMemberNum = count
+        local _,count = BNGetNumFriends()
+        print(count)
+        aura_env.mFriendNum = count
         if count > 0 then
             for index = 1,count do
-                playerName,playerRank,_,_,playerClass = GetGuildRosterInfo(index)
-                if string.find(playerName, GetRealmName()) then
-                    playerName = strsplit("-", playerName)
+                playerName = C_BattleNet.GetFriendAccountInfo(index);
+                print("|c00008888"..index.."|r")
+                for key, value in pairs(playerName.gameAccountInfo) do
+                    print("{"..tostring(key).." |c00888800"..type(value).."|r = "..tostring(value).."}\n")
                 end
-                aura_env.mMemberName[index] = playerName
-                aura_env.mMemberRank[index] = playerRank
-                aura_env.mMemberClass[index] = playerClass
             end
             return true
         else

@@ -92,8 +92,8 @@ Returns:
 
 
 --APIAnnotation-5
-presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, 
-client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, broadcastTime, canSoR = BNGetFriendInfo(friendIndex)
+isFriend, isDND, isFavorite, gameAccountInfo, accountName, battleTag, 
+note, rafLinkType, bnetAccountID, appearOffline, customMessage, lastOnlineTime, customMessageTime, isAFK, isBattleTagFriend = C_BattleNet.GetFriendAccountInfo(friendIndex)
 --Returns information about a RealID friend by index.
 
 --[[
@@ -103,21 +103,43 @@ client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, 
 
 Returns:
 
-    presenceID - auto incrementing ID, reset at each login. Persists across reload of UI, but not change of character (number)
-    presenceName - Full name of the friend, as a new form of chatlink. Visually looks like a string, but only when rendered. The real name of the friend for RealID friends. The BattleTag without the ID number for BattleTag friends. (string, Kstring)
-    battleTag - BattleTag of the friend, or nil if the friend does not have a BattleTag. (string)
-    isBattleTagPresence - A boolean indicating whether the friend is a RealID friend (false) or a BattleTag friend (true). (boolean)
-    toonName - Name of the active character tied to the BNet account (string)
-    toonID - (number)
-    client - The name of the game the friend is currently playing, if any; Returns nil if not online. Returns initialism for World of Warcraft ('WoW') (string)
-    isOnline - Online status (boolean)
-    lastOnline - (number)
-    isAFK - (boolean)
-    isDND - (boolean)
-    messageText - RealID broadcast message displayed below the user on your friends list (string)
-    noteText - The player's personal note for the friend; nil for no note (string)
-    isRIDFriend - (boolean)
-    broadcastTime - The number of seconds since the friend send the current broadcast (number)
-    canSoR - Whether or not this friend can receive a Scroll of Resurrection (boolean)
+    isFriend            (boolean)   
+    isDND               (boolean)   是否处于忙碌中
+    isFavorite          (boolean)   是否是亲密好友
+    gameAccountInfo     (table)     账号信息，具体值与当前运行的客户端有关
+    accountName         (string)    战网名
+    battleTag           (string)    战网名 + 序号
+    note                (string)    备注
+    rafLinkType         (number)    ??
+    bnetAccountID       (number)    索引号
+    appearOffline       (boolean)   是否显示离线
+    customMessage       (string)    个人说明
+    lastOnlineTime      (number)    最近一次上线时间
+    customMessageTime   (number)    个人说明更新时间
+    isAFK               (boolean)   是否离开
+    isBattleTagFriend   (boolean)   是否是实名好友，A boolean indicating whether the friend is a RealID friend (false) or a BattleTag friend (true). 
 
+    WOW客户端下：
+    gameAccountInfo = {
+        isGameAFK,          (boolean)   是否离开
+        clientProgram,      (string)    客户端类型，魔兽世界为"WOW"，BNET_CLIENT_WOW
+        realmName,          (string)    服务器名字
+        characterName,      (string)    角色名字
+        isGameBusy,         (string)    是否忙碌
+        factionName,        (string)    阵营，联盟部落
+        playerGuid,         (string)    玩家标识ID
+        realmDisplayName,   (string)    服务器显示名称
+        wowProjectID,       (number)    魔兽版本，正式服为1，燃烧的远征为5
+        gameAccountID,      (number)
+        realmID,            (number)
+        hasFocus,           (boolean)   ??
+        canSummon,          (boolean)   ??
+        isWowMobile,        (boolean)   ??
+        areaName,           (string)    角色所处区域
+        className,          (string)    角色职业
+        richPresence,       (string)    玩家状态描述，“正在酒馆战棋中搏杀！”
+        characterLevel,     (string)    角色等级
+        raceName,           (string)    角色种族
+        isOnline            (boolean)   是否在线
+    }
 --]]
