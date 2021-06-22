@@ -11,3 +11,4 @@
 更改点：
 （1）BNFriend接口存在变动，详见APIAnnotation
 （2）看下大佬的LUA Table打印怎么实现的--WA中自定义的Function不能使用
+（3）更改邮箱
