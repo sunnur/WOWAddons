@@ -15,5 +15,5 @@
 
 3、2022-09-10-ButFly-InterruptWA
 更改点：
-（1）增加麦迪文打断wa
+（1）增加麦迪文打断wa，完成其功能
 （2）WA中自定义的Function格式为aura_env.function
