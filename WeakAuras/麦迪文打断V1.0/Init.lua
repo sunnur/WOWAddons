@@ -9,7 +9,7 @@ aura_env.inspected = {}
 aura_env.npcIDs = {}
 aura_env.spellIDs = {}
 
-aura_env.debugFlag = 1
+aura_env.debugFlag = 0
 
 aura_env.trackedSpells = { --[spellId]=cooldown
     [47528]  = {default=15}, --Mind Freeze
@@ -44,7 +44,7 @@ aura_env.specialItrSpells = {
     [581] = {spellID = 183752, priority = 0},
     
     --DRUID
-    [102] = {spellID = 78675, priority = 7},
+    [102] = {spellID = 78675, priority = 8},
     [103] = {spellID = 106839, priority = 0},
     [104] = {spellID = 106839, priority = 0},
     
@@ -67,7 +67,7 @@ aura_env.specialItrSpells = {
     [70] = {spellID = 96231, priority = 0},
     
     --PRIEST
-    [258] = {spellID = 15487, priority = 6},
+    [258] = {spellID = 15487, priority = 7},
     
     --ROGUE
     [259] = {spellID = 1766, priority = 0},
@@ -77,7 +77,7 @@ aura_env.specialItrSpells = {
     --SHAMAN
     [262] = {spellID = 57994, priority = 1},
     [263] = {spellID = 57994, priority = 1},
-    [264] = {spellID = 57994, priority = 5},
+    [264] = {spellID = 57994, priority = 6},
     
     --WARLOCK
     [265] = {spellID = 119910, priority = 0},
@@ -178,9 +178,9 @@ for i,v in pairs(aura_env.specialItrSpells) do
             intrSpellID = v.spellID
             if aura_env.trackedSpells[intrSpellID].default == 15 then
                 v.priority = 3
-            else if intrSpellID == 2139 then
+            elseif intrSpellID == 2139 then
                 v.priority = 4
-            end
+            else
                 v.priority = 5
             end
         end
