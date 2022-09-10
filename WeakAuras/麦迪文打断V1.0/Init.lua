@@ -149,7 +149,11 @@ end
 function aura_env.getAuraByID(unit, spellID, filter)
     local index = 1
     local spell
-
+    
+    if (unit == nil) or (spellID == nil) then
+        return false
+    end
+    
     while true do
         _,_,_,_,_,_,_,_,_,spell = UnitAura(unit, index, filter)
         if spell == nil then
@@ -159,9 +163,9 @@ function aura_env.getAuraByID(unit, spellID, filter)
         if spell == spellID then
             return true
         end
-    
+        index = index + 1
     end
-
+    
 end
 
 for i,v in pairs(aura_env.specialItrSpells) do
@@ -195,3 +199,4 @@ end
 for match in aura_env.config.spellID:gmatch("%d+") do
     aura_env.spellIDs[match] = true
 end
+
