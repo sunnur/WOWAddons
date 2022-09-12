@@ -203,19 +203,27 @@ function(allstates,event,...)
                     nextMemberInfo.unit = 0
                     
                     local interruptList = {}
-                    
+                    local endTime
+                    local _,_,_,_,castEndTime = UnitCastingInfo(unit)
+                    local _,_,_,_,channelEndTime = UnitChannelInfo(unit)
                     local spellName,_,_,castTime = GetSpellInfo(spellId)
                     castTime = castTime / 1000
+
+                    if castEndTime then
+                        endTime = castEndTime / 1000
+                    elseif channelEndTime then
+                        endTime = channelEndTime / 1000
+                    else
+                        endTime = GetTime() + castTime
+                    end
                     
                     for i,v in pairs(aura_env.inspected) do
-                        if v.expirationTime < (GetTime() + castTime * 2 - 0.5) then
+                        if v.expirationTime < (endTime + castTime - 0.3) then
                             table.insert(interruptList, v)
                         end
                     end
                     
                     table.sort(interruptList,function (a,b)
-                            if a and b then
-                            end
                             if a.expirationTime < b.expirationTime then
                                 return true
                             elseif(a.priority < b.priority)then
@@ -230,12 +238,16 @@ function(allstates,event,...)
                     
                     memberInfo = interruptList[1]
                     
-                    if memberInfo and memberInfo.expirationTime > (GetTime() + castTime - 0.5) then
-                        memberInfo = nil
+                    print(castTime.." "..endTime)
+                    print(GetTime() + castTime)
+                    if memberInfo and memberInfo.expirationTime > (endTime - 0.5) then
                         nextMemberInfo = interruptList[1]
+                        memberInfo = nil
+                        print(1)
                     else
                         memberInfo = interruptList[1]
                         nextMemberInfo = interruptList[2]
+                        print(2)
                     end
                     
                     
@@ -302,6 +314,7 @@ function(allstates,event,...)
                         end
                         
                         if nextMemberInfo and nextMemberInfo.unit ~= 0 then
+                            print(3)
                             nextString = aura_env.getColored(nextMemberInfo.unit)
                             shoutString = shoutString.." "..UnitName(nextMemberInfo.unit).." 准备打断"
                             if nextString then
@@ -389,7 +402,6 @@ function(allstates,event,...)
     end
     
     if event == "ENCOUNTER_END" then
-        print("离开战斗")
         for key, value in pairs(allstates) do
             value.show = false
             value.changed = true

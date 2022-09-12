@@ -7,7 +7,7 @@ function()
             region:SetAnchor("BOTTOM", plate, "TOP")
             region:SetOffset(aura_env.config.xOffset, aura_env.config.yOffset)
         else
-            region:SetOffset(1000, 1000)
+            region:SetOffset(4000, 4000)
         end
     end
 end
