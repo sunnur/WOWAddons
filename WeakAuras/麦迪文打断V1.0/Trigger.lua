@@ -1,22 +1,17 @@
+--GROUP_ROSTER_UPDATE,PLAYER_ENTERING_WORLD,PLAYER_SPECIALIZATION_CHANGED,INSPECT_READY,CLEU:SPELL_CAST_SUCCESS,UNIT_SPELLCAST_INTERRUPTED,UNIT_SPELLCAST_CHANNEL_STOP,UNIT_SPELLCAST_START,UNIT_SPELLCAST_CHANNEL_START,NAME_PLATE_UNIT_ADDED,NAME_PLATE_UNIT_REMOVED,ENCOUNTER_END
 function(allstates,event,...)
-    -- aura_env.debugPrint(event)
     if event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_ENTERING_WORLD" then
-        -- aura_env.debugPrint("GroupMembers:\n")
         for unit in aura_env.GroupMembers() do
-            local specializationId = 0
-            local memberInfo = {}
             local guid = UnitGUID(unit)
             
-            memberInfo.unit = unit
-            memberInfo.expirationTime = 0
-            -- aura_env.debugPrint(unit)
-            -- aura_env.debugPrint(UnitName(unit))
-            
             if unit == "player" then
+                local memberInfo = {}
                 local currentSpec = GetSpecialization()
-                specializationId = GetSpecializationInfo(currentSpec);
+                local specializationId = GetSpecializationInfo(currentSpec);
                 
                 if specializationId then
+                    memberInfo.unit = unit
+                    memberInfo.expirationTime = 0
                     memberInfo.specialization = specializationId
                     memberInfo.interruptSkill = aura_env.specialItrSpells[specializationId].spellID
                     memberInfo.skillCD = aura_env.getDuration(memberInfo.interruptSkill, guid)
@@ -87,8 +82,8 @@ function(allstates,event,...)
             specializationId = GetInspectSpecialization(memberInfo.unit)
             --aura_env.debugPrint("specializationId = "..specializationId)
             
-            if specializationId ~= 0 then
-                if aura_env.specialItrSpells[specializationId]then
+            if specializationId and specializationId ~= 0 then
+                if aura_env.specialItrSpells[specializationId] then
                     memberInfo.specialization = specializationId
                     memberInfo.interruptSkill = aura_env.specialItrSpells[specializationId].spellID
                     memberInfo.skillCD = aura_env.getDuration(memberInfo.interruptSkill, sourceGUID)
@@ -97,26 +92,26 @@ function(allstates,event,...)
                     aura_env.inspected[sourceGUID] = memberInfo
                 end
             end
+        else
+            return true
         end
         
         aura_env.needInspect[sourceGUID] = nil
         
-        for i,v in pairs(aura_env.inspected) do
-            if IsGUIDInGroup(i) ~= true then
-                aura_env.inspected[i] = nil
-            else
-                --aura_env.debugPrint("unit: "..v.unit.." 打断: "..v.interruptSkill)
-            end
-        end
+        -- for i,v in pairs(aura_env.inspected) do
+        --     if IsGUIDInGroup(i) ~= true then
+        --         aura_env.inspected[i] = nil
+        --     end
+        -- end
         
-        for i,v in pairs(aura_env.needInspect) do
-            if IsGUIDInGroup(i) ~= true then
-                aura_env.needInspect[i] = nil
-            else
-                NotifyInspect(v)
-                break
-            end
-        end
+        -- for i,v in pairs(aura_env.needInspect) do
+        --     if IsGUIDInGroup(i) ~= true then
+        --         aura_env.needInspect[i] = nil
+        --     else
+        --         NotifyInspect(v)
+        --         break
+        --     end
+        -- end
         
     end
     
@@ -127,19 +122,12 @@ function(allstates,event,...)
             local spellId = select(12,...)
             local npcID
             
-            if spellId == 119910 or spellId == 19647 or spellId == 132409 or spellId == 89466 or spellId == 89766 then
+            if spellId == 119910 or spellId == 19647 or spellId == 132409 or spellId == 89766 or spellId == 119914 then
                 spellId = 119910
             end
             
-            if aura_env.inspected[sourceGUID] ~= nil then
-                if spellId == aura_env.inspected[sourceGUID].interruptSkill then
-                    aura_env.inspected[sourceGUID].expirationTime = GetTime() + aura_env.inspected[sourceGUID].skillCD
-                    
-                    for key, value in pairs(allstates) do
-                        value.show = false
-                        value.changed = true
-                    end
-                end
+            if aura_env.inspected[sourceGUID] and (spellId == aura_env.inspected[sourceGUID].interruptSkill) then
+                aura_env.inspected[sourceGUID].expirationTime = GetTime() + aura_env.inspected[sourceGUID].skillCD
             end
             
             npcID = select(6, strsplit("-", sourceGUID))
@@ -148,33 +136,53 @@ function(allstates,event,...)
                 if state then
                     if spellId == 228269 or spellId == 227779 then
                         state.dangerousTime = GetTime() + 20
+                    elseif spellId ~= 227628 then
+                        -- state.isHide = true
+                        -- state.changed = true
                     end
                 end
-                
-                if spellId ~=  227628 then
-                    for key, value in pairs(allstates) do
-                        value.show = false
-                        value.changed = true
-                    end
-                end
-                
             end
-            
         end
     end
+
+    if event == "UNIT_SPELLCAST_INTERRUPTED" then
+        local unit = select(1,...)
+        local sourceGUID
+        local npcID
+
+        if unit then
+            sourceGUID = UnitGUID(unit)
+        end
+
+        if sourceGUID then
+            npcID = select(6, strsplit("-", sourceGUID))
+            if npcID and aura_env.npcIDs[npcID] then
+                local state = allstates[sourceGUID]
+                -- state.isHide = true
+                -- state.changed = true
+            end
+        end
+    end
+
     if event == "UNIT_SPELLCAST_CHANNEL_STOP" then
-        local sourceGUID = select(2,...)
+        local unit = select(1,...)
         local spellId = select(3,...)
         local npcID
+        local sourceGUID
         
-        npcID = select(6, strsplit("-", sourceGUID))
-        if aura_env.npcIDs[npcID] then
-            
+        if unit then
+            sourceGUID = UnitGUID(unit)
+        end
+        
+        if sourceGUID then
+            npcID = select(6, strsplit("-", sourceGUID))
+        end
+
+        if npcID and aura_env.npcIDs[npcID] then
             if spellId == 227628 then
-                for key, value in pairs(allstates) do
-                    value.show = false
-                    value.changed = true
-                end
+                local state = allstates[sourceGUID]
+                state.isHide = true
+                state.changed = true
             end
         end
     end
@@ -194,151 +202,9 @@ function(allstates,event,...)
                 
                 if aura_env.spellIDs[tostring(spellId)] and aura_env.npcIDs[npcID] then
                     
-                    local memberInfo = {}
-                    memberInfo.priority = 9
-                    memberInfo.unit = 0
-                    
-                    local nextMemberInfo = {}
-                    nextMemberInfo.priority = 9
-                    nextMemberInfo.unit = 0
-                    
-                    local interruptList = {}
-                    local endTime
-                    local _,_,_,_,castEndTime = UnitCastingInfo(unit)
-                    local _,_,_,_,channelEndTime = UnitChannelInfo(unit)
-                    local spellName,_,_,castTime = GetSpellInfo(spellId)
-                    castTime = castTime / 1000
-
-                    if castEndTime then
-                        endTime = castEndTime / 1000
-                    elseif channelEndTime then
-                        endTime = channelEndTime / 1000
-                    else
-                        endTime = GetTime() + castTime
-                    end
-                    
-                    for i,v in pairs(aura_env.inspected) do
-                        if v.expirationTime < (endTime + castTime - 0.3) then
-                            table.insert(interruptList, v)
-                        end
-                    end
-                    
-                    table.sort(interruptList,function (a,b)
-                            if a.expirationTime < b.expirationTime then
-                                return true
-                            elseif(a.priority < b.priority)then
-                                return true
-                            elseif a.priority == b.priority then
-                                if a.unit == 0 or UnitGUID(a.unit) > UnitGUID(b.unit) then
-                                    return true
-                                end
-                            end
-                            return false
-                    end)
-                    
-                    memberInfo = interruptList[1]
-                    
-                    print(castTime.." "..endTime)
-                    print(GetTime() + castTime)
-                    if memberInfo and memberInfo.expirationTime > (endTime - 0.5) then
-                        nextMemberInfo = interruptList[1]
-                        memberInfo = nil
-                        print(1)
-                    else
-                        memberInfo = interruptList[1]
-                        nextMemberInfo = interruptList[2]
-                        print(2)
-                    end
-                    
-                    
-                    -- for key,val in pairs(memberInfo) do
-                    --     aura_env.debugPrint("key: "..key.." val: "..val)
-                    -- end
-                    
-                    local needInterrupt = 1
                     local state = allstates[sourceGUID]
-                    
-                    if spellId == 227628 then
-                        local _,_,debuffStack = AuraUtil.FindAuraByName(spellName, unit.."target","HARMFUL")
-                        if (debuffStack == nil) or (debuffStack < aura_env.config.debuffMaxStack) then
-                            needInterrupt = 0
-                        end
-                    end
-                    --228249
-                    if (spellId == 227615) then
-                        local spellTarget
-                        for spellTarget in WA_IterateGroupMembers() do
-                            if aura_env.getAuraByID(spellTarget, 228249, "HARMFUL") then
-                                break
-                            end
-                            spellTarget = nil
-                        end
+                    local nameString,nextString,shoutString = aura_env.labelUpdate(spellId, unit, true, state)
 
-                        local unitTargetGUID
-                        local roleSpec
-
-                        if spellTarget then
-                            unitTargetGUID = UnitGUID(spellTarget)
-                        end
-
-                        if unitTargetGUID and aura_env.inspected[unitTargetGUID]then
-                            roleSpec = aura_env.inspected[unitTargetGUID].specialization
-                            
-                            if GetSpecializationRole(roleSpec) == "TANK" then
-                                needInterrupt = 0
-                            end
-                        end
-                        
-                        if state and (aura_env.config.purgatoryIntr == false) then
-                            local flag = aura_env.getAuraByID(unitTargetGUID, 228958, "HARMFUL")
-                            if (GetTime() > state.dangerousTime) and flag then
-                                needInterrupt = 0
-                            end
-                        end
-                    end
-                    
-                    local nameString
-                    local nextString
-                    local shoutString = ""
-                    
-                    if needInterrupt == 1 then
-                        if memberInfo and memberInfo.unit ~= 0 then
-                            nameString = aura_env.getColored(memberInfo.unit)
-                            shoutString = UnitName(memberInfo.unit).." 打断"
-                            if nameString then
-                                nameString = nameString.." 打断"
-                            end
-                        else
-                            nameString = "|cffff0000无法打断|r"
-                            shoutString = "无法打断"
-                        end
-                        
-                        if nextMemberInfo and nextMemberInfo.unit ~= 0 then
-                            print(3)
-                            nextString = aura_env.getColored(nextMemberInfo.unit)
-                            shoutString = shoutString.." "..UnitName(nextMemberInfo.unit).." 准备打断"
-                            if nextString then
-                                nextString = nextString.." 准备打断"
-                            end
-                        else
-                            nextString = "|cffff0000下断各凭本事|r"
-                            shoutString = shoutString.." 下断各凭本事"
-                        end
-                    else
-                        nameString = "|cff00ff00不需要打断|r"
-                        shoutString = "不需要打断"
-                        if memberInfo and memberInfo.unit ~= 0 then
-                            nextString = aura_env.getColored(memberInfo.unit)
-                            shoutString = shoutString.." "..UnitName(memberInfo.unit).." 准备打断"
-                            if nextString then
-                                nextString = nextString.." 准备打断"
-                            end
-                        else
-                            shoutString = shoutString.." 下断各凭本事"
-                            nextString = "|cffff0000下断各凭本事|r"
-                        end
-                    end
-                    
                     if state then
                         state.show = true
                         state.changed = true
