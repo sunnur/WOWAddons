@@ -1,5 +1,26 @@
 function(allstates,event,...)
-    if event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_ENTERING_WORLD" then
+    if event == "OPTIONS"
+    and WeakAuras.IsOptionsOpen()
+    and aura_env.config.testMode then
+        for _, plate in pairs(C_NamePlate.GetNamePlates()) do
+            local unit = plate.namePlateUnitToken
+            local guid = UnitGUID(plate.namePlateUnitToken)
+            if unit
+            and guid then
+                local npcID = select(6, strsplit("-", guid))
+                allstates[guid] = {
+                    show = true,
+                    changed = true,
+                    unit = unit,
+                    playerName = aura_env.config.overrideSettings and aura_env.config.showName and WA_ClassColorName("player"),
+                    counter = 1,
+                    progressType = aura_env.config.showCastDuration and "timed",
+                    duration = 10,
+                    expirationTime = 10 + GetTime(),
+                }
+            end
+        end
+    elseif event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_ENTERING_WORLD" then
         for unit in aura_env.GroupMembers() do
             local guid = UnitGUID(unit)
             
@@ -14,11 +35,11 @@ function(allstates,event,...)
                     memberInfo.expirationTime = 0
                     if aura_env.specialSpellPriority[specID] then
                         memberInfo.interruptSkill = aura_env.specialSpellPriority[specID].spellID
+                        memberInfo.skillCD = aura_env.getDuration(memberInfo.interruptSkill, guid)
+                        memberInfo.priority = aura_env.specialSpellPriority[specID].priority
                     else
                         memberInfo.interruptSkill = nil
                     end
-                    memberInfo.skillCD = aura_env.getDuration(memberInfo.interruptSkill, guid)
-                    memberInfo.priority = aura_env.specialSpellPriority[specID].priority
                     
                     if guid then
                         aura_env.inspected[guid] = memberInfo
@@ -111,6 +132,17 @@ function(allstates,event,...)
             
             if unit and guid and icon then
                 aura_env.debugPrint("[RAID_TARGET_UPDATE]unit: "..unit.." icon: "..icon)
+                if UnitCanAttack("player", unit) then
+                    aura_env.needIptTar[guid] = {
+                        unit = unit,
+                        guid = guid,
+                        icon = icon
+                    }
+                else
+                    aura_env.needIptTar[icon] = nil
+                end
+                
+                --[[
                 if not aura_env.counter[guid] then
                     aura_env.counter[guid] = 1
                 end
@@ -137,7 +169,10 @@ function(allstates,event,...)
                 if aura_env.showName then
                     allstates[guid].playerName = aura_env.assignments[icon] and aura_env.assignments[icon][counter]
                 end
+                --]]
             end
+            aura_env.debugPrint("[RAID_TARGET_UPDATE]need interrupt num: "..aura_env.table_length(aura_env.needIptTar))
+            
         end
         return true
     end

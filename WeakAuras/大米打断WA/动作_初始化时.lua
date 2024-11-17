@@ -3,6 +3,11 @@
 aura_env.options = {
     readyTextGreen = true,
 }
+local iptTarInfo = {
+    unit = "",
+    guid = "",
+    icon = 0
+}
 
 aura_env.needInspect = {}
 aura_env.inspected = {}
@@ -10,7 +15,11 @@ aura_env.npcIDs = {}
 aura_env.spellIDs = {}
 aura_env.counter = aura_env.counter or {}
 aura_env.needIptTar = {}
-
+aura_env.sound = {
+    [1] = "None",
+    [2] = "Interface\\AddOns\\WeakAuras\\Media\\Sounds\\RingingPhone.ogg",
+    [3] = "Interface\\AddOns\\SharedMedia_Causese\\sound\\Next.ogg",
+}
 aura_env.debugFlag = 1
 
 function aura_env.debugPrint(logStr)
@@ -165,6 +174,9 @@ for i,v in pairs(aura_env.specialSpellPriority) do
     aura_env.debugPrint("[INIT]prio: "..v.priority.." spellID: "..v.spellID)
 end
 
+-- for i = 1, 8 do
+--     aura_env.needIptTar[i] = iptTarInfo
+-- end
 aura_env.checkAssignment = function(counter, icon)
     --[[
     if counter and
@@ -192,3 +204,11 @@ aura_env.checkAssignment = function(counter, icon)
     return true
 end
 
+function aura_env.table_length(t)
+    local count = 0
+    for _ in pairs(t) do
+        count = count + 1
+    end
+    return count
+end
+ 

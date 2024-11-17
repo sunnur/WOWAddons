@@ -35,9 +35,13 @@ function(allstates,event,...)
                 if specID then
                     memberInfo.unit = unit
                     memberInfo.expirationTime = 0
-                    memberInfo.interruptSkill = aura_env.specialSpellPriority[specID].spellID
-                    memberInfo.skillCD = aura_env.getDuration(memberInfo.interruptSkill, guid)
-                    memberInfo.priority = aura_env.specialSpellPriority[specID].priority
+                    if aura_env.specialSpellPriority[specID] then
+                        memberInfo.interruptSkill = aura_env.specialSpellPriority[specID].spellID
+                        memberInfo.skillCD = aura_env.getDuration(memberInfo.interruptSkill, guid)
+                        memberInfo.priority = aura_env.specialSpellPriority[specID].priority
+                    else
+                        memberInfo.interruptSkill = nil
+                    end
                     
                     if guid then
                         aura_env.inspected[guid] = memberInfo
@@ -134,7 +138,7 @@ function(allstates,event,...)
                     aura_env.needIptTar[icon].unit = unit
                     aura_env.needIptTar[icon].guid = guid
                 else
-                    aura_env.needIptTar[icon] = nil
+                    aura_env.needIptTar[icon].unit = nil
                 end
                 
                 --[[
@@ -166,6 +170,13 @@ function(allstates,event,...)
                 end
                 --]]
             end
+
+            if aura_env.needIptTar[icon].unit ~= nil then
+                aura_env.debugPrint("[RAID_TARGET_UPDATE]need interrupt num: "..aura_env.table_length(aura_env.needIptTar))
+            else
+                aura_env.debugPrint("[RAID_TARGET_UPDATE]need interrupt nil")
+            end
+            
         end
         return true
     end
